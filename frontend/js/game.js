@@ -3,7 +3,7 @@ import Player from "./player.js";
 import QuestionUI from "./questionUI.js";
 import { getQuestion } from "./api.js";
 import AIEngine from "./aiEngine.js";
-import { saveGame, loadGame, saveScore, loadScores, clearGame } from "./storage.js";
+import { saveGame, loadGame, clearGame } from "./storage.js";
 import SoundManager from "./sound.js";
 
 export default class Game {
@@ -69,7 +69,6 @@ export default class Game {
 
     this.updateHUD();
     this.render();
-    this.renderLeaderboard();
 
     if (this.player.position >= this.maxTile && this.currentLevel < this.maxLevel) {
       this.continueBtn.classList.remove("hidden");
@@ -193,8 +192,6 @@ export default class Game {
           this.rollButton.disabled = true;
           this.isRolling = false;
         } else {
-          saveScore(this.score);
-          this.renderLeaderboard();
           this.sound.playWin();
           this.showFinalWinResult();
           this.rollButton.disabled = true;
@@ -234,9 +231,7 @@ export default class Game {
   }
 
   getDifficultyForTile(tile, level) {
-    if (level === 1) {
-      return "easy";
-    }
+    if (level === 1) return "easy";
 
     if (level === 2) {
       if (tile <= 6) return "easy";
@@ -362,20 +357,6 @@ export default class Game {
     this.score = data.score || 0;
     this.tileQuestions = data.questions || {};
     this.usedQuestionIds = data.usedQuestionIds || [];
-  }
-
-  renderLeaderboard() {
-    const scores = loadScores();
-    const list = document.getElementById("leaderboardList");
-    if (!list) return;
-
-    list.innerHTML = "";
-
-    scores.forEach((score) => {
-      const li = document.createElement("li");
-      li.innerText = `${score} điểm`;
-      list.appendChild(li);
-    });
   }
 
   getSubject(tile) {

@@ -6,7 +6,7 @@ export default class Board {
     this.rows = 4;
     this.cols = 5;
 
-    this.tileSize = 88;
+    this.tileSize = 90;
     this.gapX = 34;
     this.gapY = 34;
 
@@ -24,7 +24,7 @@ export default class Board {
       this.rows * this.tileSize + (this.rows - 1) * this.gapY;
 
     const startX = (this.canvas.width - boardWidth) / 2;
-    const startY = (this.canvas.height - boardHeight) / 2 + 24;
+    const startY = (this.canvas.height - boardHeight) / 2 + 26;
 
     let number = 1;
 
@@ -35,15 +35,9 @@ export default class Board {
         const visualCol = reverse ? this.cols - 1 - col : col;
 
         const x = startX + visualCol * (this.tileSize + this.gapX);
-        const y =
-          startY + (this.rows - 1 - row) * (this.tileSize + this.gapY);
+        const y = startY + (this.rows - 1 - row) * (this.tileSize + this.gapY);
 
-        this.tiles.push({
-          number,
-          x,
-          y
-        });
-
+        this.tiles.push({ number, x, y });
         number++;
       }
     }
@@ -52,7 +46,6 @@ export default class Board {
   getTileType(number) {
     if (number === 1) return "start";
     if (number === 20) return "finish";
-
     if ([2, 5, 8, 10, 12, 15, 18].includes(number)) return "math";
     if ([3, 6, 9, 13, 16, 19].includes(number)) return "english";
     return "vietnamese";
@@ -87,7 +80,7 @@ export default class Board {
     ctx.translate(x, y);
     ctx.scale(scale, scale);
 
-    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.fillStyle = "rgba(255,255,255,0.72)";
     ctx.beginPath();
     ctx.arc(0, 0, 18, 0, Math.PI * 2);
     ctx.arc(20, -8, 24, 0, Math.PI * 2);
@@ -99,11 +92,10 @@ export default class Board {
   }
 
   drawBackground() {
-    const cloudY = 86;
     const spacing = this.canvas.width / 6;
 
     for (let i = 0; i < 6; i++) {
-      this.drawCloud(100 + i * spacing, cloudY + (i % 2) * 10, 0.9);
+      this.drawCloud(110 + i * spacing, 92 + (i % 2) * 10, 0.9);
     }
   }
 
@@ -111,7 +103,7 @@ export default class Board {
     const ctx = this.ctx;
 
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.45)";
+    ctx.strokeStyle = "rgba(255,255,255,0.44)";
     ctx.lineWidth = 16;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -128,7 +120,7 @@ export default class Board {
 
     ctx.stroke();
 
-    ctx.strokeStyle = "rgba(255,255,255,0.18)";
+    ctx.strokeStyle = "rgba(255,255,255,0.16)";
     ctx.lineWidth = 6;
     ctx.stroke();
 
@@ -158,7 +150,7 @@ export default class Board {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    ctx.strokeStyle = isActive ? "#ffffff" : "rgba(17,24,39,0.28)";
+    ctx.strokeStyle = isActive ? "#ffffff" : "rgba(17,24,39,0.24)";
     ctx.lineWidth = isActive ? 6 : 3;
     ctx.stroke();
 
@@ -181,20 +173,12 @@ export default class Board {
 
     if (tile.number === 1) {
       ctx.font = "bold 12px Arial";
-      ctx.fillText(
-        "START",
-        tile.x + this.tileSize / 2,
-        tile.y + this.tileSize - 14
-      );
+      ctx.fillText("START", tile.x + this.tileSize / 2, tile.y + this.tileSize - 14);
     }
 
     if (tile.number === 20) {
       ctx.font = "bold 12px Arial";
-      ctx.fillText(
-        "FINISH",
-        tile.x + this.tileSize / 2,
-        tile.y + this.tileSize - 14
-      );
+      ctx.fillText("FINISH", tile.x + this.tileSize / 2, tile.y + this.tileSize - 14);
     }
 
     ctx.restore();

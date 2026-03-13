@@ -19,13 +19,17 @@
   box-sizing:border-box;
 }
 
+html, body{
+  height:100%;
+}
+
 body{
   margin:0;
   font-family:'Segoe UI',sans-serif;
   color:var(--text);
   background:
     radial-gradient(circle at top,#1d4ed8 0%,#0b1c4f 30%,#071336 100%);
-  min-height:100vh;
+  overflow:hidden;
 }
 
 button{
@@ -48,12 +52,16 @@ button:disabled{
 
 .app-shell{
   width:min(1500px, 96vw);
-  margin:20px auto;
-  padding:20px;
-  border-radius:32px;
+  height:min(94vh, 980px);
+  margin:3vh auto;
+  padding:18px;
+  border-radius:28px;
   background:linear-gradient(180deg,rgba(29,78,216,0.24),rgba(8,19,54,0.55));
   border:1px solid rgba(255,255,255,0.08);
   box-shadow:0 24px 80px rgba(0,0,0,0.35);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
 
 .app-header{
@@ -61,7 +69,8 @@ button:disabled{
   justify-content:space-between;
   align-items:center;
   gap:16px;
-  margin-bottom:18px;
+  margin-bottom:14px;
+  flex:0 0 auto;
 }
 
 .brand{
@@ -79,6 +88,7 @@ button:disabled{
   justify-content:center;
   background:linear-gradient(180deg,#fde68a,#f59e0b);
   font-size:28px;
+  flex:0 0 auto;
 }
 
 .app-title{
@@ -107,9 +117,15 @@ button:disabled{
 
 .app-main{
   display:grid;
-  grid-template-columns:minmax(0, 1.8fr) minmax(320px, 0.9fr);
-  gap:20px;
-  align-items:start;
+  grid-template-columns:minmax(0, 1.9fr) minmax(320px, 0.85fr);
+  gap:16px;
+  align-items:stretch;
+  flex:1 1 auto;
+  min-height:0;
+}
+
+.board-section{
+  min-height:0;
 }
 
 .board-card,
@@ -121,18 +137,23 @@ button:disabled{
 }
 
 .board-card{
-  padding:18px;
+  height:100%;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
 }
 
 .board-topbar{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-  margin-bottom:16px;
+  gap:10px;
+  margin-bottom:12px;
+  flex:0 0 auto;
 }
 
 .mini-chip{
-  min-height:74px;
+  min-height:70px;
   padding:10px 12px;
   border-radius:18px;
   background:rgba(255,255,255,0.08);
@@ -151,44 +172,48 @@ button:disabled{
 }
 
 .mini-chip-value{
-  font-size:24px;
+  font-size:22px;
   font-weight:800;
 }
 
 .canvas-wrap{
-  width:100%;
-  border-radius:26px;
+  flex:1 1 auto;
+  min-height:0;
+  border-radius:24px;
   overflow:hidden;
   background:linear-gradient(180deg,#87d8ff 0%,#4fc3f7 55%,#2aa8df 100%);
   box-shadow:
     inset 0 4px 30px rgba(255,255,255,0.18),
     0 16px 40px rgba(0,0,0,0.3);
+  display:flex;
 }
 
 canvas{
   display:block;
   width:100%;
-  height:auto;
+  height:100%;
 }
 
 .board-footer{
-  margin-top:14px;
+  margin-top:12px;
+  flex:0 0 auto;
 }
 
 .status-message{
-  min-height:28px;
+  min-height:24px;
   padding:12px 14px;
   border-radius:16px;
   background:rgba(255,255,255,0.08);
   color:#fde68a;
-  font-size:17px;
+  font-size:16px;
   font-weight:700;
 }
 
 .side-panel{
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:14px;
+  min-height:0;
 }
 
 .panel-card{
@@ -204,6 +229,7 @@ canvas{
   display:flex;
   flex-direction:column;
   gap:12px;
+  flex:0 0 auto;
 }
 
 .primary-btn{
@@ -250,7 +276,9 @@ canvas{
 }
 
 .question-card{
-  min-height:360px;
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
 }
 
 .question-header{
@@ -310,7 +338,10 @@ canvas{
 }
 
 .leaderboard-card{
-  min-height:180px;
+  flex:0 0 auto;
+  min-height:150px;
+  max-height:220px;
+  overflow:auto;
 }
 
 .leaderboard-list{
@@ -439,32 +470,24 @@ canvas{
 }
 
 @media (max-width: 1200px){
+  body{
+    overflow:auto;
+  }
+
   .app-shell{
     width:98vw;
+    height:auto;
+    min-height:100vh;
+    margin:0 auto;
+    border-radius:0;
   }
 
   .app-main{
     grid-template-columns:1fr;
   }
-
-  .side-panel{
-    order:2;
-  }
-
-  .board-section{
-    order:1;
-  }
 }
 
 @media (max-width: 768px){
-  .app-shell{
-    margin:0;
-    width:100vw;
-    min-height:100vh;
-    border-radius:0;
-    padding:14px;
-  }
-
   .app-header{
     flex-direction:column;
     align-items:flex-start;

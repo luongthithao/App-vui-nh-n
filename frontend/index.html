@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bee Learning Adventure</title>
+  <meta name="description" content="Board game học Toán, Tiếng Anh, Tiếng Việt cho học sinh lớp 4." />
+  <meta name="theme-color" content="#1d4ed8" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="startScreen" class="start-screen">
+    <div class="start-card">
+      <div class="start-badge">🐝</div>
+      <h1 class="start-title">Bee Learning Adventure</h1>
+      <p class="start-subtitle">Ứng dụng học tập tương tác cho học sinh lớp 4</p>
+      <p class="start-desc">
+        Hoàn thành 20 câu hỏi mỗi level, vượt qua 4 cấp độ từ dễ đến nâng cao.
+      </p>
+      <button id="startGame" class="start-button">🚀 Bắt đầu</button>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🐝</div>
+        <div>
+          <h1 class="app-title">Bee Learning Adventure</h1>
+          <p class="app-subtitle">Board game học Toán • Tiếng Anh • Tiếng Việt</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="newGameBtn" class="ghost-btn">Chơi mới</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="board-section">
+        <div class="board-card">
+          <div class="board-topbar">
+            <div class="mini-chip">
+              <span class="mini-chip-label">Level</span>
+              <span id="currentLevel" class="mini-chip-value">1</span>
+            </div>
+
+            <div class="mini-chip">
+              <span class="mini-chip-label">Ô hiện tại</span>
+              <span id="currentTile" class="mini-chip-value">1 / 20</span>
+            </div>
+
+            <div class="mini-chip">
+              <span class="mini-chip-label">Hồi sinh</span>
+              <span id="reviveCount" class="mini-chip-value">3</span>
+            </div>
+
+            <div class="mini-chip">
+              <span class="mini-chip-label">Điểm</span>
+              <span id="score" class="mini-chip-value">0</span>
+            </div>
+
+            <div class="mini-chip">
+              <span class="mini-chip-label">Xúc xắc</span>
+              <span id="diceResult" class="mini-chip-value">-</span>
+            </div>
+
+            <div class="mini-chip">
+              <span class="mini-chip-label">Độ khó AI</span>
+              <span id="aiDifficulty" class="mini-chip-value">easy</span>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="980" height="620"></canvas>
+          </div>
+
+          <div class="board-footer">
+            <div id="statusMessage" class="status-message">Sẵn sàng bắt đầu hành trình!</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-card action-card">
+          <h2 class="panel-title">Điều khiển</h2>
+          <button id="rollDice" class="primary-btn">🎲 Đi tiếp</button>
+          <button id="continueBtn" class="secondary-btn hidden">➡ Chơi tiếp level sau</button>
+
+          <div class="progress-block">
+            <div class="progress-head">
+              <span>Tiến độ level</span>
+              <span id="levelProgressText">1 / 20</span>
+            </div>
+            <div class="progress-bar">
+              <div id="levelProgressFill" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card question-card">
+          <div class="question-header">
+            <span id="questionBadge" class="question-badge neutral">Chưa có câu hỏi</span>
+          </div>
+
+          <h2 id="questionTitle" class="question-title">Câu hỏi sẽ hiển thị ở đây</h2>
+          <p id="questionText" class="question-text">
+            Nhấn “Đi tiếp” để di chuyển đến ô mới và nhận câu hỏi.
+          </p>
+
+          <div id="answers" class="answers"></div>
+        </div>
+
+        <div class="panel-card leaderboard-card">
+          <h2 class="panel-title">🏆 Leaderboard</h2>
+          <ol id="leaderboardList" class="leaderboard-list"></ol>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="resultOverlay" class="result-overlay hidden">
+    <div id="resultCard" class="result-card">
+      <div id="resultEmoji" class="result-emoji">🎉</div>
+      <h2 id="resultTitle">Chúc mừng!</h2>
+      <p id="resultMessage">Em đã hoàn thành thử thách.</p>
+
+      <div class="result-actions">
+        <button id="closeResultBtn">Tiếp tục</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

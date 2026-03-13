@@ -1,0 +1,138 @@
+{
+  "math": {
+    "easy": [
+      {
+        "id": 1,
+        "text": "5 + 3 = ?",
+        "options": ["6", "7", "8", "9"],
+        "answer": "8"
+      },
+      {
+        "id": 2,
+        "text": "9 - 4 = ?",
+        "options": ["3", "4", "5", "6"],
+        "answer": "5"
+      },
+      {
+        "id": 3,
+        "text": "2 + 6 = ?",
+        "options": ["7", "8", "9", "10"],
+        "answer": "8"
+      }
+    ],
+    "medium": [
+      {
+        "id": 4,
+        "text": "12 + 15 = ?",
+        "options": ["25", "26", "27", "28"],
+        "answer": "27"
+      },
+      {
+        "id": 5,
+        "text": "24 - 9 = ?",
+        "options": ["13", "14", "15", "16"],
+        "answer": "15"
+      }
+    ],
+    "hard": [
+      {
+        "id": 6,
+        "text": "36 ÷ 4 = ?",
+        "options": ["7", "8", "9", "10"],
+        "answer": "9"
+      },
+      {
+        "id": 7,
+        "text": "7 × 6 = ?",
+        "options": ["40", "41", "42", "43"],
+        "answer": "42"
+      }
+    ]
+  },
+  "english": {
+    "easy": [
+      {
+        "id": 101,
+        "text": "Dog nghĩa là gì?",
+        "options": ["Mèo", "Chó", "Chim", "Cá"],
+        "answer": "Chó"
+      },
+      {
+        "id": 102,
+        "text": "Apple nghĩa là gì?",
+        "options": ["Táo", "Cam", "Nho", "Chuối"],
+        "answer": "Táo"
+      }
+    ],
+    "medium": [
+      {
+        "id": 103,
+        "text": "She ____ a student.",
+        "options": ["am", "is", "are", "be"],
+        "answer": "is"
+      },
+      {
+        "id": 104,
+        "text": "They ____ my friends.",
+        "options": ["am", "is", "are", "be"],
+        "answer": "are"
+      }
+    ],
+    "hard": [
+      {
+        "id": 105,
+        "text": "Choose the correct sentence.",
+        "options": [
+          "He go to school.",
+          "He goes to school.",
+          "He going to school.",
+          "He are going to school."
+        ],
+        "answer": "He goes to school."
+      }
+    ]
+  },
+  "vietnamese": {
+    "easy": [
+      {
+        "id": 201,
+        "text": "Trái nghĩa của 'cao' là gì?",
+        "options": ["thấp", "to", "dài", "xa"],
+        "answer": "thấp"
+      },
+      {
+        "id": 202,
+        "text": "Từ nào viết đúng?",
+        "options": ["sum họp", "xum họp", "sung họp", "xung họp"],
+        "answer": "sum họp"
+      }
+    ],
+    "medium": [
+      {
+        "id": 203,
+        "text": "Từ 'dũng cảm' có nghĩa là gì?",
+        "options": ["nhút nhát", "gan dạ", "lười biếng", "buồn bã"],
+        "answer": "gan dạ"
+      },
+      {
+        "id": 204,
+        "text": "Từ nào là danh từ?",
+        "options": ["chạy", "đẹp", "bàn", "cao"],
+        "answer": "bàn"
+      }
+    ],
+    "hard": [
+      {
+        "id": 205,
+        "text": "Chọn câu viết đúng chính tả.",
+        "options": [
+          "Em đang học bài.",
+          "Em đang hok bài.",
+          "Em dang học bài.",
+          "Em đang học bai."
+        ],
+        "answer": "Em đang học bài."
+      }
+    ]
+  }
+}

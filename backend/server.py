@@ -29,38 +29,29 @@ with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
     QUESTIONS_DB = json.load(f)
 
 
-def normalize_difficulty(subject: str, difficulty: str) -> str:
-    subject_data = QUESTIONS_DB.get(subject)
-    if not subject_data:
-        raise HTTPException(status_code=404, detail="Subject not found")
-
-    if difficulty in subject_data:
-        return difficulty
-
-    if "hard" in subject_data:
-        return "hard"
-
-    if "medium" in subject_data:
-        return "medium"
-
-    if "easy" in subject_data:
-        return "easy"
-
-    raise HTTPException(status_code=404, detail="No difficulty data found")
-
-
 def get_question_pool(subject: str, difficulty: str):
     subject_data = QUESTIONS_DB.get(subject)
     if not subject_data:
         raise HTTPException(status_code=404, detail="Subject not found")
 
-    normalized_difficulty = normalize_difficulty(subject, difficulty)
-    pool = subject_data.get(normalized_difficulty, [])
+    pool = subject_data.get(difficulty)
+    if pool:
+        return pool
 
-    if not pool:
-        raise HTTPException(status_code=404, detail="No questions available")
+    if difficulty == "hard" and subject_data.get("medium"):
+        return subject_data["medium"]
 
-    return pool
+    if difficulty == "medium":
+        if subject_data.get("hard"):
+            return subject_data["hard"]
+        if subject_data.get("easy"):
+            return subject_data["easy"]
+
+    if difficulty == "easy":
+        if subject_data.get("medium"):
+            return subject_data["medium"]
+
+    raise HTTPException(status_code=404, detail="No questions available")
 
 
 @app.get("/")
@@ -83,17 +74,17 @@ def get_question(
 
     excluded = set()
     if exclude_ids.strip():
-      for raw_id in exclude_ids.split(","):
-          raw_id = raw_id.strip()
-          if raw_id.isdigit():
-              excluded.add(int(raw_id))
+        for raw_id in exclude_ids.split(","):
+            raw_id = raw_id.strip()
+            if raw_id.isdigit():
+                excluded.add(int(raw_id))
 
     available = [q for q in pool if q["id"] not in excluded]
 
     if not available:
         raise HTTPException(
             status_code=409,
-            detail="No unused questions available for this subject and difficulty"
+            detail=f"No unused questions available for {subject}/{difficulty}"
         )
 
     question = random.choice(available)

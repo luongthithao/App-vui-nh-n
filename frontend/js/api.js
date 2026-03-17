@@ -1,7 +1,14 @@
 import { API_BASE_URL } from "./config.js";
 
 export async function getQuestion(subject, difficulty, excludeIds = []) {
-  const exclude = Array.isArray(excludeIds) ? excludeIds.join(",") : "";
+  const cleanedIds = Array.isArray(excludeIds)
+    ? excludeIds
+        .filter((id) => Number.isInteger(id) || /^\d+$/.test(String(id)))
+        .map((id) => Number(id))
+    : [];
+
+  const exclude = cleanedIds.join(",");
+
   const url =
     `${API_BASE_URL}/question/${subject}/${difficulty}` +
     `?exclude_ids=${encodeURIComponent(exclude)}`;

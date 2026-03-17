@@ -6,21 +6,60 @@
   <title>Chú Ong Mật</title>
   <meta name="description" content="Game học tập tương tác cho học sinh lớp 4." />
   <meta name="theme-color" content="#1d4ed8" />
+  <link rel="icon" href="assets/bee.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
+  <!-- START SCREEN -->
   <div id="startScreen" class="start-screen">
-    <div class="start-card">
-      <div class="start-badge" id="previewAvatar">🐝</div>
-      <h1 class="start-title">Chú Ong Mật</h1>
-      <p class="start-desc">
-        Mỗi màn có 20 ô. Đi càng xa, câu hỏi càng khó và cần tư duy hơn.
-      </p>
+    <div class="start-card premium">
+      <div class="start-hero">
+        <div id="previewAvatar" class="start-badge">🐝</div>
 
-      <div class="start-form">
+        <div class="start-heading">
+          <h1 class="start-title">Chú Ong Mật</h1>
+          <p class="start-desc">
+          </p>
+        </div>
+      </div>
+
+      <div class="start-feature-row">
+        <div class="start-feature">
+          <div class="feature-icon">🎯</div>
+          <div>
+            <div class="feature-title">Chơi thì biết</div>
+            <div class="feature-text">Mỗi ô là 1 bí mật</div>
+          </div>
+        </div>
+
+        <div class="start-feature">
+          <div class="feature-icon">⭐</div>
+          <div>
+            <div class="feature-title">Dễ đến khó</div>
+            <div class="feature-text">Mình đứng ở chỗ nào</div>
+          </div>
+        </div>
+
+        <div class="start-feature">
+          <div class="feature-icon">🐝</div>
+          <div>
+            <div class="feature-title">Nhân vật ong mật</div>
+            <div class="feature-text">Chay thử thách</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="start-form-card">
         <label class="start-label" for="playerName">Tên người chơi</label>
-        <input id="playerName" class="start-input" type="text" maxlength="20" placeholder="Nhập tên của em" />
+        <input
+          id="playerName"
+          class="start-input"
+          type="text"
+          maxlength="20"
+          placeholder="Nhập tên"
+          required
+          autocomplete="off"
+        />
 
         <label class="start-label" for="avatarSelect">Chọn avatar</label>
         <select id="avatarSelect" class="start-select">
@@ -31,25 +70,21 @@
           <option value="🐯">🐯 Hổ</option>
           <option value="🦁">🦁 Sư tử</option>
         </select>
-      </div>
 
-      <div class="start-actions">
-        <button id="startGame" class="start-button">🚀 Bắt đầu game mới</button>
-        <button id="continueGame" class="start-secondary hidden">▶ Chơi tiếp</button>
-      </div>
+        <p id="startError" class="start-error hidden">Vui lòng nhập tên người chơi.</p>
 
-      <div class="start-tip">
-        Trả lời đúng để đi tiếp và ghi điểm. Hết hồi sinh sẽ quay lại đầu màn hiện tại.
+        <button id="startGame" class="start-button" disabled>🚀 Vào game</button>
       </div>
     </div>
   </div>
 
+  <!-- APP -->
   <div class="app-shell">
     <header class="app-header">
       <div class="brand">
-        <div class="brand-icon" id="headerAvatar">🐝</div>
+        <div id="headerAvatar" class="brand-icon">🐝</div>
         <div>
-          <h1 class="app-title">Chú Ong Mật</h1>
+          <h1 class="app-title">Chơi thôi</h1>
           <div id="playerGreeting" class="player-greeting">Chào mừng em đến với trò chơi!</div>
         </div>
       </div>
@@ -60,6 +95,7 @@
     </header>
 
     <main class="app-main">
+      <!-- LEFT -->
       <section class="board-section">
         <div class="board-card">
           <div class="board-topbar">
@@ -95,7 +131,7 @@
           </div>
 
           <div class="canvas-wrap">
-            <canvas id="gameCanvas" width="980" height="620"></canvas>
+            <canvas id="gameCanvas" width="1160" height="700"></canvas>
           </div>
 
           <div class="board-footer">
@@ -104,6 +140,7 @@
         </div>
       </section>
 
+      <!-- RIGHT -->
       <aside class="side-panel">
         <div class="panel-card action-card">
           <h2 class="panel-title">Điều khiển</h2>
@@ -143,6 +180,7 @@
     </main>
   </div>
 
+  <!-- RESULT OVERLAY -->
   <div id="resultOverlay" class="result-overlay hidden">
     <div id="resultCard" class="result-card">
       <div id="resultEmoji" class="result-emoji">🎉</div>

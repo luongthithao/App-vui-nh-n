@@ -11,23 +11,37 @@ export default class SoundManager {
   createAudio(src) {
     const audio = new Audio();
     audio.src = src;
-    audio.preload = "none";
+    audio.preload = "auto";
+
+    audio.addEventListener("error", () => {
+      console.warn(`Không tải được âm thanh: ${src}`);
+    });
+
     return audio;
   }
 
   setVolume(volume) {
-    if (this.correct) this.correct.volume = volume;
-    if (this.wrong) this.wrong.volume = volume;
-    if (this.dice) this.dice.volume = volume;
-    if (this.win) this.win.volume = volume;
+    [this.correct, this.wrong, this.dice, this.win].forEach((audio) => {
+      if (audio) {
+        audio.volume = volume;
+      }
+    });
   }
 
   play(audio) {
     if (!audio) return;
 
-    audio.pause();
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
+      }
+    } catch (error) {
+      console.warn("Play sound error:", error);
+    }
   }
 
   playCorrect() {

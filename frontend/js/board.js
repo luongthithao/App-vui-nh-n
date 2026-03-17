@@ -6,9 +6,10 @@ export default class Board {
     this.rows = 4;
     this.cols = 5;
 
-    this.tileSize = 90;
-    this.gapX = 34;
-    this.gapY = 34;
+    // Tối ưu cho canvas 1160 x 700
+    this.tileSize = 104;
+    this.gapX = 40;
+    this.gapY = 28;
 
     this.tiles = [];
     this.generateTiles();
@@ -23,8 +24,9 @@ export default class Board {
     const boardHeight =
       this.rows * this.tileSize + (this.rows - 1) * this.gapY;
 
+    // Canh giữa ngang, kéo lên nhẹ để board đẹp hơn trong khung
     const startX = (this.canvas.width - boardWidth) / 2;
-    const startY = (this.canvas.height - boardHeight) / 2 + 26;
+    const startY = (this.canvas.height - boardHeight) / 2 + 6;
 
     let number = 1;
 
@@ -37,14 +39,17 @@ export default class Board {
         const baseX = startX + visualCol * (this.tileSize + this.gapX);
         const baseY = startY + (this.rows - 1 - row) * (this.tileSize + this.gapY);
 
-        const offsetX = Math.sin((row + visualCol) * 0.8) * 8;
-        const offsetY = Math.cos(visualCol * 0.9 + row * 0.7) * 16;
+        // Offset mềm để board bớt cứng
+        const offsetX = Math.sin((row + visualCol) * 0.82) * 10;
+        const offsetY = Math.cos(visualCol * 0.9 + row * 0.72) * 14;
 
-        const x = baseX + offsetX;
-        const y = baseY + offsetY;
+        this.tiles.push({
+          number,
+          x: baseX + offsetX,
+          y: baseY + offsetY
+        });
 
-        this.tiles.push({ number, x, y });
-        number++;
+        number += 1;
       }
     }
   }
@@ -65,12 +70,12 @@ export default class Board {
     return "#c084fc";
   }
 
-  shadeColor(hex, percent) {
+  shadeColor(hex, amount) {
     const num = parseInt(hex.replace("#", ""), 16);
 
-    let r = (num >> 16) + percent;
-    let g = ((num >> 8) & 0x00ff) + percent;
-    let b = (num & 0x0000ff) + percent;
+    let r = (num >> 16) + amount;
+    let g = ((num >> 8) & 0x00ff) + amount;
+    let b = (num & 0x0000ff) + amount;
 
     r = Math.max(0, Math.min(255, r));
     g = Math.max(0, Math.min(255, g));
@@ -98,27 +103,36 @@ export default class Board {
   }
 
   drawBackground() {
-    const spacing = this.canvas.width / 6;
+    const ctx = this.ctx;
 
+    const sky = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+    sky.addColorStop(0, "#8cddff");
+    sky.addColorStop(0.58, "#5dc5f3");
+    sky.addColorStop(1, "#31a9df");
+
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const spacing = this.canvas.width / 6;
     for (let i = 0; i < 6; i++) {
-      this.drawCloud(110 + i * spacing, 92 + (i % 2) * 10, 0.9);
+      this.drawCloud(120 + i * spacing, 86 + (i % 2) * 8, 0.96);
     }
   }
 
   drawPath() {
     const ctx = this.ctx;
-
     const points = this.tiles.map((tile) => ({
       x: tile.x + this.tileSize / 2,
       y: tile.y + this.tileSize / 2
     }));
 
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.44)";
-    ctx.lineWidth = 16;
+
+    // lớp glow nền
+    ctx.strokeStyle = "rgba(255,255,255,0.16)";
+    ctx.lineWidth = 26;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-
     ctx.beginPath();
 
     points.forEach((point, index) => {
@@ -140,8 +154,14 @@ export default class Board {
 
     ctx.stroke();
 
-    ctx.strokeStyle = "rgba(255,255,255,0.16)";
-    ctx.lineWidth = 6;
+    // lớp sáng chính
+    ctx.strokeStyle = "rgba(255,255,255,0.38)";
+    ctx.lineWidth = 11;
+    ctx.stroke();
+
+    // lõi sáng mảnh
+    ctx.strokeStyle = "rgba(255,255,255,0.14)";
+    ctx.lineWidth = 4;
     ctx.stroke();
 
     ctx.restore();
@@ -154,8 +174,13 @@ export default class Board {
 
     ctx.save();
 
+    // bóng tile
+    ctx.shadowColor = "rgba(0,0,0,0.18)";
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 7;
+
     ctx.beginPath();
-    ctx.roundRect(tile.x, tile.y, this.tileSize, this.tileSize, 22);
+    ctx.roundRect(tile.x, tile.y, this.tileSize, this.tileSize, 26);
 
     const gradient = ctx.createLinearGradient(
       tile.x,
@@ -164,41 +189,64 @@ export default class Board {
       tile.y + this.tileSize
     );
     gradient.addColorStop(0, "#ffffff");
-    gradient.addColorStop(0.06, color);
-    gradient.addColorStop(1, this.shadeColor(color, -18));
+    gradient.addColorStop(0.08, color);
+    gradient.addColorStop(1, this.shadeColor(color, -22));
 
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    ctx.strokeStyle = isActive ? "#ffffff" : "rgba(17,24,39,0.24)";
-    ctx.lineWidth = isActive ? 6 : 3;
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    ctx.strokeStyle = isActive ? "#ffffff" : "rgba(17,24,39,0.16)";
+    ctx.lineWidth = isActive ? 7 : 3;
     ctx.stroke();
 
     if (isActive) {
-      ctx.shadowColor = "rgba(255,255,255,0.85)";
-      ctx.shadowBlur = 18;
+      ctx.shadowColor = "rgba(255,255,255,0.9)";
+      ctx.shadowBlur = 24;
       ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,0.1)";
+      ctx.beginPath();
+      ctx.roundRect(
+        tile.x - 4,
+        tile.y - 4,
+        this.tileSize + 8,
+        this.tileSize + 8,
+        30
+      );
+      ctx.fill();
+
       ctx.shadowBlur = 0;
     }
 
     ctx.fillStyle = "#0f172a";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "bold 34px Arial";
+    ctx.font = "bold 36px Arial";
     ctx.fillText(
       String(tile.number),
       tile.x + this.tileSize / 2,
-      tile.y + this.tileSize / 2
+      tile.y + this.tileSize / 2 - 2
     );
 
     if (tile.number === 1) {
       ctx.font = "bold 12px Arial";
-      ctx.fillText("START", tile.x + this.tileSize / 2, tile.y + this.tileSize - 14);
+      ctx.fillText(
+        "START",
+        tile.x + this.tileSize / 2,
+        tile.y + this.tileSize - 15
+      );
     }
 
     if (tile.number === 20) {
       ctx.font = "bold 12px Arial";
-      ctx.fillText("FINISH", tile.x + this.tileSize / 2, tile.y + this.tileSize - 14);
+      ctx.fillText(
+        "FINISH",
+        tile.x + this.tileSize / 2,
+        tile.y + this.tileSize - 15
+      );
     }
 
     ctx.restore();

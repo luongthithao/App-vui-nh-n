@@ -12,21 +12,45 @@
 
   <div id="startScreen" class="start-screen">
     <div class="start-card">
-      <div class="start-badge">🐝</div>
+      <div class="start-badge" id="previewAvatar">🐝</div>
       <h1 class="start-title">Chú Ong Mật</h1>
       <p class="start-desc">
-        Hoàn thành 20 câu hỏi mỗi level, vượt qua 4 cấp độ từ dễ đến nâng cao.
+        Mỗi màn có 20 ô. Đi càng xa, câu hỏi càng khó và cần tư duy hơn.
       </p>
-      <button id="startGame" class="start-button">🚀 Bắt đầu</button>
+
+      <div class="start-form">
+        <label class="start-label" for="playerName">Tên người chơi</label>
+        <input id="playerName" class="start-input" type="text" maxlength="20" placeholder="Nhập tên của em" />
+
+        <label class="start-label" for="avatarSelect">Chọn avatar</label>
+        <select id="avatarSelect" class="start-select">
+          <option value="🐝">🐝 Ong</option>
+          <option value="🦊">🦊 Cáo</option>
+          <option value="🐼">🐼 Gấu trúc</option>
+          <option value="🐸">🐸 Ếch</option>
+          <option value="🐯">🐯 Hổ</option>
+          <option value="🦁">🦁 Sư tử</option>
+        </select>
+      </div>
+
+      <div class="start-actions">
+        <button id="startGame" class="start-button">🚀 Bắt đầu game mới</button>
+        <button id="continueGame" class="start-secondary hidden">▶ Chơi tiếp</button>
+      </div>
+
+      <div class="start-tip">
+        Trả lời đúng để đi tiếp và ghi điểm. Hết hồi sinh sẽ quay lại đầu màn hiện tại.
+      </div>
     </div>
   </div>
 
   <div class="app-shell">
     <header class="app-header">
       <div class="brand">
-        <div class="brand-icon">🐝</div>
+        <div class="brand-icon" id="headerAvatar">🐝</div>
         <div>
-          <h1 class="app-title">🐝 Chú Ong Mật</h1>
+          <h1 class="app-title">Chú Ong Mật</h1>
+          <div id="playerGreeting" class="player-greeting">Chào mừng em đến với trò chơi!</div>
         </div>
       </div>
 
@@ -40,7 +64,7 @@
         <div class="board-card">
           <div class="board-topbar">
             <div class="mini-chip">
-              <span class="mini-chip-label">Level</span>
+              <span class="mini-chip-label">Màn</span>
               <span id="currentLevel" class="mini-chip-value">1</span>
             </div>
 
@@ -61,7 +85,7 @@
 
             <div class="mini-chip">
               <span class="mini-chip-label">Xúc xắc</span>
-              <span id="diceResult" class="mini-chip-value">-</span>
+              <span id="diceResult" class="mini-chip-value">🎲 -</span>
             </div>
 
             <div class="mini-chip">
@@ -83,17 +107,23 @@
       <aside class="side-panel">
         <div class="panel-card action-card">
           <h2 class="panel-title">Điều khiển</h2>
+
           <button id="rollDice" class="primary-btn">🎲 Đi tiếp</button>
-          <button id="continueBtn" class="secondary-btn hidden">➡ Chơi tiếp level sau</button>
+          <button id="continueBtn" class="secondary-btn hidden">➡ Qua màn tiếp theo</button>
 
           <div class="progress-block">
             <div class="progress-head">
-              <span>Tiến độ level</span>
+              <span>Tiến độ màn</span>
               <span id="levelProgressText">1 / 20</span>
             </div>
             <div class="progress-bar">
               <div id="levelProgressFill" class="progress-fill"></div>
             </div>
+          </div>
+
+          <div class="stage-info">
+            <div class="stage-info-label">Tên màn</div>
+            <div id="stageName" class="stage-info-value">Khởi động</div>
           </div>
         </div>
 

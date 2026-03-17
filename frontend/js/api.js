@@ -1,21 +1,30 @@
 import { API_BASE_URL } from "./config.js";
 
 export async function getQuestion(subject, difficulty, excludeIds = []) {
-  const params = new URLSearchParams();
+  const exclude = Array.isArray(excludeIds) ? excludeIds.join(",") : "";
+  const url =
+    `${API_BASE_URL}/question/${subject}/${difficulty}` +
+    `?exclude_ids=${encodeURIComponent(exclude)}`;
 
-  if (excludeIds.length > 0) {
-    params.set("exclude_ids", excludeIds.join(","));
-  }
-
-  const url = `${API_BASE_URL}/question/${subject}/${difficulty}?${params.toString()}`;
-
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const message = errorData.detail || "Không lấy được câu hỏi từ server";
+    let message = "Không tải được câu hỏi";
+
+    try {
+      const errorData = await response.json();
+      if (errorData?.detail) {
+        message = errorData.detail;
+      }
+    } catch (_) {}
+
     throw new Error(message);
   }
 
-  return await response.json();
+  return response.json();
 }

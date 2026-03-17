@@ -13,9 +13,9 @@ export default class Game {
 
     this.maxTile = 20;
     this.maxRevives = 3;
-    this.maxLevel = 4;
+    this.stageReward = 30;
 
-    this.currentLevel = 1;
+    this.currentStage = 1;
     this.revives = 3;
     this.score = 0;
 
@@ -52,17 +52,23 @@ export default class Game {
 
     this.isRolling = false;
 
-    this.closeResultBtn.onclick = () => {
-      this.hideResult();
-    };
+    if (this.closeResultBtn) {
+      this.closeResultBtn.onclick = () => {
+        this.hideResult();
+      };
+    }
 
-    this.continueBtn.onclick = () => {
-      this.startNextLevel();
-    };
+    if (this.continueBtn) {
+      this.continueBtn.onclick = () => {
+        this.startNextStage();
+      };
+    }
 
-    this.newGameBtn.onclick = () => {
-      this.restartFullGame();
-    };
+    if (this.newGameBtn) {
+      this.newGameBtn.onclick = () => {
+        this.restartFullGame();
+      };
+    }
 
     this.loadState();
     this.player.syncToTile();
@@ -70,9 +76,9 @@ export default class Game {
     this.updateHUD();
     this.render();
 
-    if (this.player.position >= this.maxTile && this.currentLevel < this.maxLevel) {
-      this.continueBtn.classList.remove("hidden");
-      this.rollButton.disabled = true;
+    if (this.player.position >= this.maxTile) {
+      if (this.continueBtn) this.continueBtn.classList.remove("hidden");
+      if (this.rollButton) this.rollButton.disabled = true;
     }
   }
 
@@ -82,9 +88,12 @@ export default class Game {
 
     this.isRolling = true;
     this.rollButton.disabled = true;
-    this.continueBtn.classList.add("hidden");
-    this.setStatus("🎲 Đang tung xúc xắc...");
 
+    if (this.continueBtn) {
+      this.continueBtn.classList.add("hidden");
+    }
+
+    this.setStatus("🎲 Đang tung xúc xắc...");
     this.sound.playDice();
 
     const finalDice = Math.floor(Math.random() * 3) + 1;
@@ -100,7 +109,7 @@ export default class Game {
   animateDice(finalValue) {
     return new Promise((resolve) => {
       let frame = 0;
-      const totalFrames = 14;
+      const totalFrames = 16;
 
       const tick = () => {
         frame += 1;
@@ -108,7 +117,7 @@ export default class Game {
         this.diceResultEl.innerText = `🎲 ${tempValue}`;
 
         if (frame < totalFrames) {
-          setTimeout(tick, 70);
+          setTimeout(tick, 65);
         } else {
           this.diceResultEl.innerText = `🎲 ${finalValue}`;
           resolve();
@@ -136,9 +145,11 @@ export default class Game {
     try {
       const tile = this.player.position;
       const subject = this.getSubject(tile);
-      const difficulty = this.getDifficultyForTile(tile, this.currentLevel);
+      const difficulty = this.getDifficultyForStage(tile, this.currentStage);
 
       let question;
+
+      this.questionUI.showLoading();
 
       if (this.tileQuestions[tile]) {
         question = this.tileQuestions[tile];
@@ -161,7 +172,8 @@ export default class Game {
       );
     } catch (error) {
       console.error(error);
-      this.setStatus("Không còn đủ câu hỏi mới cho level này.");
+      this.setStatus("Màn này đang thiếu câu mới ở mức độ khó hiện tại.");
+      this.questionUI.clear();
       this.isRolling = false;
       this.rollButton.disabled = false;
     }
@@ -185,18 +197,16 @@ export default class Game {
       this.questionUI.clear();
 
       if (this.player.position >= this.maxTile) {
-        if (this.currentLevel < this.maxLevel) {
-          this.sound.playWin();
-          this.showLevelCompleteResult();
+        this.score += this.stageReward;
+        this.sound.playWin();
+        this.showStageCompleteResult();
+
+        if (this.continueBtn) {
           this.continueBtn.classList.remove("hidden");
-          this.rollButton.disabled = true;
-          this.isRolling = false;
-        } else {
-          this.sound.playWin();
-          this.showFinalWinResult();
-          this.rollButton.disabled = true;
-          this.isRolling = true;
         }
+
+        this.rollButton.disabled = true;
+        this.isRolling = false;
       } else {
         this.isRolling = false;
         this.rollButton.disabled = false;
@@ -211,13 +221,10 @@ export default class Game {
         this.isRolling = false;
         this.rollButton.disabled = false;
       } else {
-        this.setStatus("💥 Hết lượt hồi sinh. Quay về level 1!");
+        this.setStatus(`💥 Hết lượt hồi sinh. Quay lại đầu màn ${this.currentStage}!`);
         this.player.reset();
-        this.score = 0;
         this.revives = this.maxRevives;
-        this.currentLevel = 1;
         this.tileQuestions = {};
-        this.usedQuestionIds = [];
         this.questionUI.clear();
         this.showLoseResult(true);
         this.isRolling = false;
@@ -230,55 +237,52 @@ export default class Game {
     this.render();
   }
 
-  getDifficultyForTile(tile, level) {
-    if (level === 1) return "easy";
+  getDifficultyForStage(tile, stage) {
+    let base;
 
-    if (level === 2) {
-      if (tile <= 6) return "easy";
-      return "medium";
+    if (stage <= 3) {
+      base = "easy";
+    } else if (stage <= 6) {
+      base = tile <= 10 ? "easy" : "medium";
+    } else if (stage <= 10) {
+      base = "medium";
+    } else if (stage <= 15) {
+      base = tile <= 6 ? "medium" : "hard";
+    } else {
+      base = "hard";
     }
 
-    if (level === 3) {
-      if (tile <= 5) return "medium";
-      return "hard";
-    }
+    const aiLevel = this.ai.getDifficulty();
 
-    if (tile <= 4) return "medium";
-    return "hard";
+    if (base === "easy" && aiLevel === "hard") return "medium";
+    if (base === "medium" && aiLevel === "easy") return "easy";
+    if (base === "medium" && aiLevel === "hard") return "hard";
+    if (base === "hard" && aiLevel === "easy") return "medium";
+
+    return base;
   }
 
-  showLevelCompleteResult() {
+  showStageCompleteResult() {
+    if (!this.resultOverlay) return;
+
     this.resultCard.className = "result-card win";
     this.resultEmoji.innerText = "⭐";
-    this.resultTitle.innerText = `Hoàn thành Level ${this.currentLevel}`;
+    this.resultTitle.innerText = `Hoàn thành màn ${this.currentStage}`;
     this.resultMessage.innerText =
-      `Rất tốt! Em đã hoàn thành 20 câu của level ${this.currentLevel}. Bấm "Chơi tiếp level sau" để sang level khó hơn.`;
+      `Rất tốt! Em đã hoàn thành màn ${this.currentStage} và nhận thêm ${this.stageReward} điểm thưởng. Bấm "Qua màn tiếp theo" để đi tiếp.`;
 
     this.closeResultBtn.innerText = "Đóng";
     this.resultOverlay.classList.remove("hidden");
   }
 
-  showFinalWinResult() {
-    this.resultCard.className = "result-card win";
-    this.resultEmoji.innerText = "🏆";
-    this.resultTitle.innerText = "Hoàn thành toàn bộ thử thách!";
-    this.resultMessage.innerText =
-      `Em đã vượt qua 4 level với tổng ${this.score} điểm. Quá xuất sắc!`;
-
-    this.closeResultBtn.innerText = "Chơi lại từ đầu";
-    this.closeResultBtn.onclick = () => {
-      this.restartFullGame();
-    };
-
-    this.resultOverlay.classList.remove("hidden");
-  }
-
   showLoseResult(isResetToStart) {
+    if (!this.resultOverlay) return;
+
     this.resultCard.className = "result-card lose";
     this.resultEmoji.innerText = isResetToStart ? "💥" : "😵";
     this.resultTitle.innerText = isResetToStart ? "Hết lượt hồi sinh" : "Trả lời sai";
     this.resultMessage.innerText = isResetToStart
-      ? "Em đã quay về level 1. Hãy thử lại từ đầu nhé!"
+      ? `Em quay lại ô số 1 của màn ${this.currentStage}. Tiếp tục cố gắng nhé!`
       : "Không sao, em vẫn còn cơ hội để tiếp tục.";
 
     this.closeResultBtn.innerText = "Tiếp tục";
@@ -289,22 +293,23 @@ export default class Game {
     this.resultOverlay.classList.remove("hidden");
   }
 
-  startNextLevel() {
-    if (this.currentLevel >= this.maxLevel) return;
-
+  startNextStage() {
     this.hideResult();
 
-    this.currentLevel += 1;
+    this.currentStage += 1;
     this.player.reset();
     this.revives = this.maxRevives;
     this.tileQuestions = {};
     this.isRolling = false;
 
     this.rollButton.disabled = false;
-    this.continueBtn.classList.add("hidden");
+
+    if (this.continueBtn) {
+      this.continueBtn.classList.add("hidden");
+    }
 
     this.questionUI.clear();
-    this.setStatus(`🚀 Bắt đầu Level ${this.currentLevel}! Câu hỏi sẽ khó hơn.`);
+    this.setStatus(`🚀 Bắt đầu màn ${this.currentStage}! Câu hỏi sẽ khó hơn.`);
     this.saveState();
     this.updateHUD();
     this.render();
@@ -313,7 +318,7 @@ export default class Game {
   restartFullGame() {
     this.hideResult();
 
-    this.currentLevel = 1;
+    this.currentStage = 1;
     this.revives = this.maxRevives;
     this.score = 0;
     this.tileQuestions = {};
@@ -323,22 +328,27 @@ export default class Game {
 
     this.isRolling = false;
     this.rollButton.disabled = false;
-    this.continueBtn.classList.add("hidden");
+
+    if (this.continueBtn) {
+      this.continueBtn.classList.add("hidden");
+    }
 
     clearGame();
     this.saveState();
     this.updateHUD();
     this.render();
-    this.setStatus("Bắt đầu lại từ level 1!");
+    this.setStatus("Bắt đầu lại từ màn 1!");
   }
 
   hideResult() {
-    this.resultOverlay.classList.add("hidden");
+    if (this.resultOverlay) {
+      this.resultOverlay.classList.add("hidden");
+    }
   }
 
   saveState() {
     saveGame({
-      currentLevel: this.currentLevel,
+      currentStage: this.currentStage,
       position: this.player.position,
       revives: this.revives,
       score: this.score,
@@ -351,7 +361,7 @@ export default class Game {
     const data = loadGame();
     if (!data) return;
 
-    this.currentLevel = data.currentLevel || 1;
+    this.currentStage = data.currentStage || 1;
     this.player.position = data.position || 1;
     this.revives = data.revives || 3;
     this.score = data.score || 0;
@@ -366,19 +376,40 @@ export default class Game {
   }
 
   updateHUD() {
-    this.currentLevelEl.innerText = `${this.currentLevel}`;
-    this.currentTileEl.innerText = `${this.player.position} / ${this.maxTile}`;
-    this.reviveCountEl.innerText = `${this.revives}`;
-    this.scoreEl.innerText = `${this.score}`;
-    this.aiDifficultyEl.innerText = this.ai.getDifficulty();
+    if (this.currentLevelEl) {
+      this.currentLevelEl.innerText = `${this.currentStage}`;
+    }
 
-    this.levelProgressText.innerText = `${this.player.position} / ${this.maxTile}`;
-    const progress = (this.player.position / this.maxTile) * 100;
-    this.levelProgressFill.style.width = `${progress}%`;
+    if (this.currentTileEl) {
+      this.currentTileEl.innerText = `${this.player.position} / ${this.maxTile}`;
+    }
+
+    if (this.reviveCountEl) {
+      this.reviveCountEl.innerText = `${this.revives}`;
+    }
+
+    if (this.scoreEl) {
+      this.scoreEl.innerText = `${this.score}`;
+    }
+
+    if (this.aiDifficultyEl) {
+      this.aiDifficultyEl.innerText = this.ai.getDifficulty();
+    }
+
+    if (this.levelProgressText) {
+      this.levelProgressText.innerText = `${this.player.position} / ${this.maxTile}`;
+    }
+
+    if (this.levelProgressFill) {
+      const progress = (this.player.position / this.maxTile) * 100;
+      this.levelProgressFill.style.width = `${progress}%`;
+    }
   }
 
   setStatus(message) {
-    this.statusMessageEl.innerText = message;
+    if (this.statusMessageEl) {
+      this.statusMessageEl.innerText = message;
+    }
   }
 
   render() {

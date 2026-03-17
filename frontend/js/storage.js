@@ -1,27 +1,50 @@
+const GAME_KEY = "bee_game_state";
+const SCORE_KEY = "bee_scores";
+
 export function saveGame(state) {
-  localStorage.setItem("bee_game_state", JSON.stringify(state));
+  localStorage.setItem(GAME_KEY, JSON.stringify(state));
 }
 
 export function loadGame() {
-  const data = localStorage.getItem("bee_game_state");
+  const data = localStorage.getItem(GAME_KEY);
   if (!data) return null;
-  return JSON.parse(data);
+
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Load game error:", error);
+    return null;
+  }
 }
 
 export function clearGame() {
-  localStorage.removeItem("bee_game_state");
+  localStorage.removeItem(GAME_KEY);
+}
+
+export function hasSavedGame() {
+  return !!localStorage.getItem(GAME_KEY);
 }
 
 export function saveScore(score) {
-  let scores = JSON.parse(localStorage.getItem("bee_scores") || "[]");
+  let scores = [];
+
+  try {
+    scores = JSON.parse(localStorage.getItem(SCORE_KEY) || "[]");
+  } catch (_) {
+    scores = [];
+  }
 
   scores.push(score);
   scores.sort((a, b) => b - a);
   scores = scores.slice(0, 5);
 
-  localStorage.setItem("bee_scores", JSON.stringify(scores));
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores));
 }
 
 export function loadScores() {
-  return JSON.parse(localStorage.getItem("bee_scores") || "[]");
+  try {
+    return JSON.parse(localStorage.getItem(SCORE_KEY) || "[]");
+  } catch (_) {
+    return [];
+  }
 }

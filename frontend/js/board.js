@@ -34,8 +34,14 @@ export default class Board {
       for (let col = 0; col < this.cols; col++) {
         const visualCol = reverse ? this.cols - 1 - col : col;
 
-        const x = startX + visualCol * (this.tileSize + this.gapX);
-        const y = startY + (this.rows - 1 - row) * (this.tileSize + this.gapY);
+        const baseX = startX + visualCol * (this.tileSize + this.gapX);
+        const baseY = startY + (this.rows - 1 - row) * (this.tileSize + this.gapY);
+
+        const offsetX = Math.sin((row + visualCol) * 0.8) * 8;
+        const offsetY = Math.cos(visualCol * 0.9 + row * 0.7) * 16;
+
+        const x = baseX + offsetX;
+        const y = baseY + offsetY;
 
         this.tiles.push({ number, x, y });
         number++;
@@ -102,6 +108,11 @@ export default class Board {
   drawPath() {
     const ctx = this.ctx;
 
+    const points = this.tiles.map((tile) => ({
+      x: tile.x + this.tileSize / 2,
+      y: tile.y + this.tileSize / 2
+    }));
+
     ctx.save();
     ctx.strokeStyle = "rgba(255,255,255,0.44)";
     ctx.lineWidth = 16;
@@ -110,12 +121,21 @@ export default class Board {
 
     ctx.beginPath();
 
-    this.tiles.forEach((tile, index) => {
-      const cx = tile.x + this.tileSize / 2;
-      const cy = tile.y + this.tileSize / 2;
+    points.forEach((point, index) => {
+      if (index === 0) {
+        ctx.moveTo(point.x, point.y);
+        return;
+      }
 
-      if (index === 0) ctx.moveTo(cx, cy);
-      else ctx.lineTo(cx, cy);
+      const prev = points[index - 1];
+      const midX = (prev.x + point.x) / 2;
+      const midY = (prev.y + point.y) / 2;
+
+      ctx.quadraticCurveTo(prev.x, prev.y, midX, midY);
+
+      if (index === points.length - 1) {
+        ctx.quadraticCurveTo(midX, midY, point.x, point.y);
+      }
     });
 
     ctx.stroke();

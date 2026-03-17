@@ -7,6 +7,7 @@ export default class Player {
     this.image.src = "assets/bee.png";
 
     const startTile = this.board.getTilePosition(1);
+
     this.drawX = startTile.x + this.board.tileSize / 2;
     this.drawY = startTile.y + this.board.tileSize / 2;
 
@@ -16,46 +17,52 @@ export default class Player {
 
   move(step) {
     this.position += step;
-    if (this.position > 20) this.position = 20;
+
+    if (this.position > 20) {
+      this.position = 20;
+    }
   }
 
   reset() {
     this.position = 1;
+
     const tile = this.board.getTilePosition(1);
+
     this.drawX = tile.x + this.board.tileSize / 2;
     this.drawY = tile.y + this.board.tileSize / 2;
   }
 
   syncToTile() {
     const tile = this.board.getTilePosition(this.position);
+
     this.drawX = tile.x + this.board.tileSize / 2;
     this.drawY = tile.y + this.board.tileSize / 2;
   }
 
-  animateToTile(targetTile, duration = 280) {
+  async animateToTile(targetTile, duration = 260) {
     return new Promise((resolve) => {
-      const targetX = targetTile.x + this.board.tileSize / 2;
-      const targetY = targetTile.y + this.board.tileSize / 2;
-
       const startX = this.drawX;
       const startY = this.drawY;
+
+      const endX = targetTile.x + this.board.tileSize / 2;
+      const endY = targetTile.y + this.board.tileSize / 2;
+
       const startTime = performance.now();
 
       const animate = (now) => {
         const elapsed = now - startTime;
         const t = Math.min(elapsed / duration, 1);
+
         const eased = this.easeInOutQuad(t);
 
-        const arcHeight = Math.sin(t * Math.PI) * 24;
-
-        this.drawX = startX + (targetX - startX) * eased;
-        this.drawY = startY + (targetY - startY) * eased - arcHeight;
+        this.drawX = startX + (endX - startX) * eased;
+        this.drawY = startY + (endY - startY) * eased;
 
         if (t < 1) {
           requestAnimationFrame(animate);
         } else {
-          this.drawX = targetX;
-          this.drawY = targetY;
+          this.drawX = endX;
+          this.drawY = endY;
           resolve();
         }
       };
@@ -65,11 +72,14 @@ export default class Player {
   }
 
   easeInOutQuad(t) {
-    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    return t < 0.5
+      ? 2 * t * t
+      : 1 - Math.pow(-2 * t + 2, 2) / 2;
   }
 
   draw(ctx) {
     this.bobOffset += 0.08;
+
     const bob = Math.sin(this.bobOffset) * 2;
 
     const x = this.drawX;
@@ -79,10 +89,12 @@ export default class Player {
 
     ctx.shadowColor = "rgba(0,0,0,0.25)";
     ctx.shadowBlur = 10;
+
     ctx.fillStyle = "rgba(0,0,0,0.18)";
     ctx.beginPath();
     ctx.ellipse(x, y + 20, 16, 8, 0, 0, Math.PI * 2);
     ctx.fill();
+
     ctx.shadowBlur = 0;
 
     if (this.image.complete && this.image.naturalWidth > 0) {
@@ -95,14 +107,9 @@ export default class Player {
       );
     } else {
       ctx.fillStyle = "#f59e0b";
+
       ctx.beginPath();
       ctx.arc(x, y, 16, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#111827";
-      ctx.beginPath();
-      ctx.arc(x - 6, y - 2, 2, 0, Math.PI * 2);
-      ctx.arc(x + 6, y - 2, 2, 0, Math.PI * 2);
       ctx.fill();
     }
 

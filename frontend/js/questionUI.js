@@ -6,6 +6,23 @@ export default class QuestionUI {
     this.answers = document.getElementById("answers");
   }
 
+  showLoading() {
+    this.badge.innerText = "Đang tải câu hỏi";
+    this.badge.className = "question-badge neutral";
+    this.badge.style.background = "";
+    this.badge.style.color = "";
+
+    this.title.innerText = "Chuẩn bị câu hỏi";
+    this.text.innerText = "Vui lòng chờ một chút...";
+    this.answers.innerHTML = "";
+
+    const btn = document.createElement("button");
+    btn.className = "answer-btn";
+    btn.disabled = true;
+    btn.innerText = "Đang lấy dữ liệu...";
+    this.answers.appendChild(btn);
+  }
+
   show(question, onAnswered) {
     const subjectLabel = this.formatSubject(question.subject);
     const difficultyLabel = this.formatDifficulty(question.difficulty);
@@ -19,13 +36,23 @@ export default class QuestionUI {
     this.text.innerText = question.text;
     this.answers.innerHTML = "";
 
+    let locked = false;
+
     question.options.forEach((opt, index) => {
       const btn = document.createElement("button");
       btn.className = "answer-btn";
       btn.innerText = `${String.fromCharCode(65 + index)}. ${opt}`;
 
       btn.onclick = () => {
+        if (locked) return;
+        locked = true;
+
         const isCorrect = opt === question.answer;
+
+        const allButtons = this.answers.querySelectorAll("button");
+        allButtons.forEach((item) => {
+          item.disabled = true;
+        });
 
         if (typeof onAnswered === "function") {
           onAnswered(isCorrect);

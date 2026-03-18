@@ -9,7 +9,7 @@ app = FastAPI(title="Bee Learning API")
 
 raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://127.0.0.1:5500,http://localhost:5500,http://127.0.0.1:5501,http://localhost:5501"
+     "http://127.0.0.1:5500,http://localhost:5500,https://fancy-tulumba-14bb7c.netlify.app"
 )
 
 allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
